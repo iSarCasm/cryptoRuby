@@ -1,0 +1,11 @@
+docs
+tests
+Block.rb
+Gamma.rb
+laba.rb
+P_crypt.rb
+S_crypt.rb
+d.txt
+e.txt
+i.txt
+k.txt
