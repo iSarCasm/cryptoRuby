@@ -1,7 +1,7 @@
 module S_crypt
-  SYSTEM_SYMBOLS = 31
-  ASCII_RANGE = 256**1 - 1 # 1 byte max
-  UTF_8_RANGE = 256**4 - 1 # 4 bytes max
+  SYSTEM_SYMBOLS = 32
+  ASCII_RANGE = 256**1 # 1 byte max
+  UTF_8_RANGE = 256**4 # 4 bytes max
 
   def self.encrypt(plain,key,options={})
     #Reading data---------------------
@@ -24,8 +24,8 @@ module S_crypt
     encrypted_block = Array.new(blocks.count) { Array.new(block_size) }
     for b in 0...blocks.count do
       for i in 0...block_size do
-        if blocks[b][i].ord > SYSTEM_SYMBOLS #Not system
-          encrypted_block[b][i] = ((blocks[b][i].ord+key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(plain.encoding)
+        if blocks[b][i].ord > SYSTEM_SYMBOLS-1 #Not system
+          encrypted_block[b][i] = ((blocks[b][i].ord + key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(plain.encoding)
         else
           encrypted_block[b][i] = blocks[b][i]
         end
@@ -39,6 +39,7 @@ module S_crypt
   end
 
   def self.decrypt(cipher,key,options={})
+    p "\n"
     #Reading data---------------------
     if key.class == Fixnum
       block_size = 1
@@ -60,8 +61,8 @@ module S_crypt
     decrypted_block = Array.new(blocks.count) { Array.new(block_size) }
     for b in 0...blocks.count do
       for i in 0...block_size do
-        if blocks[b][i].ord > SYSTEM_SYMBOLS #Not System
-          decrypted_block[b][i] = ((blocks[b][i].ord-key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(cipher.encoding)
+        if blocks[b][i].ord > SYSTEM_SYMBOLS-1 #Not System
+          decrypted_block[b][i] = ((blocks[b][i].ord - key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(cipher.encoding)
         else
           decrypted_block[b][i] = blocks[b][i]
         end
