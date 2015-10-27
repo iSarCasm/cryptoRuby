@@ -1,6 +1,6 @@
 module S_crypt
-  SYSTEM_SYMBOLS = 32
-  ASCII_RANGE = 256**1 # 1 byte max
+  SYSTEM_SYMBOLS = 31
+  ASCII_RANGE = 256**1 - 1 # 1 byte max
   UTF_8_RANGE = 256**4 # 4 bytes max
 
   def self.encrypt(plain,key,options={})
@@ -12,10 +12,7 @@ module S_crypt
     if options[:string_key]
       key = (key.split("").collect {|k| k.ord})
     end
-    char_range = -SYSTEM_SYMBOLS + case plain.encoding
-      when Encoding::UTF_8 then UTF_8_RANGE
-      else ASCII_RANGE
-    end
+    char_range = -SYSTEM_SYMBOLS + UTF_8_RANGE
     #====BLOCKING=====================
     block_size = key.size
     blocks = Block.build(plain, block_size, fill:true)
@@ -24,8 +21,8 @@ module S_crypt
     encrypted_block = Array.new(blocks.count) { Array.new(block_size) }
     for b in 0...blocks.count do
       for i in 0...block_size do
-        if blocks[b][i].ord > SYSTEM_SYMBOLS-1 #Not system
-          encrypted_block[b][i] = ((blocks[b][i].ord + key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(plain.encoding)
+        if blocks[b][i].ord > SYSTEM_SYMBOLS #Not system
+          encrypted_block[b][i] = ((blocks[b][i].ord + key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr
         else
           encrypted_block[b][i] = blocks[b][i]
         end
@@ -49,10 +46,7 @@ module S_crypt
     if options[:string_key]
       key = (key.split("").collect {|k| k.ord})
     end
-    char_range = -SYSTEM_SYMBOLS + case cipher.encoding
-      when Encoding::UTF_8 then UTF_8_RANGE
-      else ASCII_RANGE
-    end
+    char_range = -SYSTEM_SYMBOLS + UTF_8_RANGE
     #====BLOCKING=====================
     block_size = key.size
     blocks = Block.build(cipher, block_size, fill:true)
@@ -61,8 +55,8 @@ module S_crypt
     decrypted_block = Array.new(blocks.count) { Array.new(block_size) }
     for b in 0...blocks.count do
       for i in 0...block_size do
-        if blocks[b][i].ord > SYSTEM_SYMBOLS-1 #Not System
-          decrypted_block[b][i] = ((blocks[b][i].ord - key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr(cipher.encoding)
+        if blocks[b][i].ord > SYSTEM_SYMBOLS #Not System
+          decrypted_block[b][i] = ((blocks[b][i].ord - key[i].to_i - SYSTEM_SYMBOLS)%char_range + SYSTEM_SYMBOLS).chr
         else
           decrypted_block[b][i] = blocks[b][i]
         end

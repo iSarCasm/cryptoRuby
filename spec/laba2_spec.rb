@@ -9,6 +9,7 @@ describe Basics do
 		expect(Basics.XOR("1111","1100")).to eq("0011")
 		expect(Basics.XOR("1001","0000")).to eq("1001")
 		expect(Basics.XOR("111","111")).to eq("000")
+		expect(Basics.XOR(Basics.XOR("1011","1100"),"1100")).to eq("1011")
 	end
 
 	it "ROR works" do
@@ -25,9 +26,8 @@ describe Basics do
 
 	it "Product works" do
 		expect(Basics.product("1","111")).to eq("111")
-		expect(Basics.product("0","111")).to eq("0")
-		expect(Basics.product("111","1000",50)).to eq("110")
-		expect(Basics.product("111","1000",250)).to eq("111000")
+		expect(Basics.product("0","111")).to eq("000")
+		expect(Basics.product("111","1000")).to eq("1000")
 	end
 
 	it "S works" do
@@ -48,6 +48,22 @@ describe T_cipher do
 		expect(T_cipher.keygen(key,4,8)).to eq("01101001")
 		expect(T_cipher.keygen(key,5,8)).to eq("11111111")
 	end
+
+	it "Transport coding works" do
+		source = "01101001111111110000110111111111"
+		encrypted = T_cipher.transport(source,:encode)
+		decrypted = T_cipher.transport(encrypted, :decode)
+		expect(decrypted).to eq(source)
+	end
+
+	it "T_cipher Encryption-Decryption works" do
+		input = "1100101101110010"
+		key = 	"01110101110011010000001000100110"
+		encrypted_transport, encrypted = T_cipher.encrypt(input,key)
+		message = encrypted.dup
+		decrypted, transport_decrypted = T_cipher.decrypt(message, key)
+		expect(decrypted).to eq(input)
+	end
 end
 
 describe F_crypt do
@@ -66,14 +82,18 @@ describe F_crypt do
 		input = "1100101101110010"
 		key = 	"01110101110011010000001000100110"
 		encrypted = F_crypt.encrypt(input, key, 1, T_cipher.method(:f), T_cipher.method(:keygen))
-		# expect(encrypted).to eq("0000 0000 0000 0000")
 		expect(F_crypt.decrypt(encrypted, key, 1, T_cipher.method(:f),T_cipher.method(:keygen))).to eq(input)
 
 
-		input = "0000000000000000"
+		input = "0000000000000001"
 		key = 	"00000000000000000000000000000000"
 		encrypted = F_crypt.encrypt(input, key, 1, T_cipher.method(:f), T_cipher.method(:keygen))
-		# expect(encrypted).to eq("0000 0000 0000 0000")
+		expect(F_crypt.decrypt(encrypted, key, 1, T_cipher.method(:f),T_cipher.method(:keygen))).to eq(input)
+	
+
+		input = "1001100011100101"
+		key = 	"1110011000010000100011100000101"
+		encrypted = F_crypt.encrypt(input, key, 1, T_cipher.method(:f), T_cipher.method(:keygen))
 		expect(F_crypt.decrypt(encrypted, key, 1, T_cipher.method(:f),T_cipher.method(:keygen))).to eq(input)
 	end
 end
