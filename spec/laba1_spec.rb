@@ -1,6 +1,6 @@
 require_relative '../Block'
-require_relative '../P_crypt'
-require_relative '../S_crypt'
+require_relative '../laba1/P_crypt'
+require_relative '../laba1/S_crypt'
 
 describe P_crypt do
 	it "Has encryption" do

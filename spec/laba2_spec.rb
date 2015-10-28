@@ -1,6 +1,6 @@
-require_relative '../F_crypt'
-require_relative '../Basics'
-require_relative '../T_cipher'
+require_relative '../laba2/F_crypt'
+require_relative '../laba2/Basics'
+require_relative '../laba2/T_cipher'
 
 describe Basics do
 	it "XOR works" do
@@ -60,9 +60,9 @@ describe T_cipher do
 		input = "1100101101110010"
 		key = 	"01110101110011010000001000100110"
 		encrypted_transport, encrypted = T_cipher.encrypt(input,key)
-		message = encrypted.dup
-		decrypted, transport_decrypted = T_cipher.decrypt(message, key)
-		expect(decrypted).to eq(input)
+		message = encrypted_transport.dup
+		transport_decrypted, decrypted = T_cipher.decrypt(message, key)
+		expect(transport_decrypted).to eq(input)
 	end
 end
 
@@ -89,7 +89,7 @@ describe F_crypt do
 		key = 	"00000000000000000000000000000000"
 		encrypted = F_crypt.encrypt(input, key, 1, T_cipher.method(:f), T_cipher.method(:keygen))
 		expect(F_crypt.decrypt(encrypted, key, 1, T_cipher.method(:f),T_cipher.method(:keygen))).to eq(input)
-	
+
 
 		input = "1001100011100101"
 		key = 	"1110011000010000100011100000101"

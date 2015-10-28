@@ -1,5 +1,4 @@
 require_relative 'T_cipher'
-require_relative 'F_crypt'
 
 def raw oct
 	oct.split('.').map{|x| x.to_i.to_s(2).rjust(8,"0")}.join
@@ -11,6 +10,8 @@ class ::String
 	end
 end
 
+$debug_mode = true
+
 puts "Input(16 bit):"
 input = raw(gets.chomp)
 puts input.nice
@@ -18,18 +19,20 @@ puts "Key(32 bit):"
 key  = raw(gets.chomp)
 puts key.nice
 
-encrypted_transport, encrypted = T_cipher.encrypt(input,key)
+encrypted = T_cipher.encrypt(input,key, debug: true)
+encrypted_transport = T_cipher.transport(encrypted, :encode)
 #SENDER
-message = encrypted.dup
+message = encrypted_transport.dup
 #RECIEVER
-decrypted, transport_decrypted = T_cipher.decrypt(message, key)
+transport_decrypted = T_cipher.transport(message, :decode)
+decrypted = T_cipher.decrypt(transport_decrypted, key, debug: true)
 
 puts "Encrypted:"
 puts encrypted.nice
 puts "Transport code:"
 puts encrypted_transport
 puts "Decoded transport:"
-puts transport_decrypted
+puts transport_decrypted.nice
 puts "Decrypted:"
 puts decrypted.nice
 puts "Result: \n\t#{input.nice} \n\t== \n\t#{decrypted.nice}"
